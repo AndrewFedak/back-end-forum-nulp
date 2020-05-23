@@ -2,15 +2,11 @@ const express = require('express');
 require('../db/mongoose');
 const articlesRouter = require('./router/articles');
 const usersRouter = require('./router/users');
-
+const cors = require('cors');
 const app = express();
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-    next();
-});
 app.use(express.json());
-
+app.use(cors());
 app.use(articlesRouter);
 app.use(usersRouter);
 
