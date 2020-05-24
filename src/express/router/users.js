@@ -66,7 +66,7 @@ const upload = multer({
         fileSize: 5000000
     },
     fileFilter(req, file, cb) {
-        if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+        if (!file.originalname.match(/\.(png|jpg|jpeg|.JPG|.tif)$/)) {
             cb(new Error('Your file type is forbidden!'))
         }
         cb(undefined, true);
