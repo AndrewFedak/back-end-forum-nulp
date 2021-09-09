@@ -11,5 +11,8 @@ app.use(cors());
 app.use(articlesRouter);
 app.use(usersRouter);
 
+app.get('/', async (req, res) => {
+    res.status(200).send('Andrew Fedak')
+});
 
 app.listen(process.env.PORT, () => console.log('We are on ' + process.env.PORT + ' port, db ' + process.env.MONGODB_URL));
