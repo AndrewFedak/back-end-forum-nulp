@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 const multer = require('multer');
 const sharp = require('sharp');
 
-router.post('/authenticate', async (req, res) => {
+router.post('/api/authenticate', async (req, res) => {
     const user = new User(req.body);
     try {
         const token = await user.generateAuthToken();
@@ -16,7 +16,7 @@ router.post('/authenticate', async (req, res) => {
     }
 });
 
-router.post('/authenticate/login', async (req, res) => {
+router.post('/api/authenticate/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.dataUserEmail, req.body.dataUserPassword);
         const token = await user.generateAuthToken();
@@ -26,7 +26,7 @@ router.post('/authenticate/login', async (req, res) => {
     }
 });
 
-router.post('/logout', auth, async (req, res) => {
+router.post('/api/logout', auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token
@@ -38,7 +38,7 @@ router.post('/logout', auth, async (req, res) => {
     }
 });
 
-router.get('/profile', auth, async (req, res) => {
+router.get('/api/profile', auth, async (req, res) => {
     try {
         const {dataUserName, dataUserEmail, _id, dataUserIcon} = req.user;
         res.send({dataUserName, dataUserEmail, _id, dataUserIcon})
@@ -47,7 +47,7 @@ router.get('/profile', auth, async (req, res) => {
     }
 });
 
-router.get('/online', async (req, res) => {
+router.get('/api/online', async (req, res) => {
     try {
         const array = await User.find({});
         const filteredArray = array.filter((item) => {

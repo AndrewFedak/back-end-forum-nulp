@@ -51,9 +51,7 @@ router.post('/api/articles/add-comment/:id', auth, async (req, res) => {
         });
 
         await article.save();
-        res.send({
-            'message': 'Comment is saved'
-        })
+        res.send(article)
     } catch (e) {
         res.status(400).send()
     }
@@ -80,18 +78,11 @@ router.post('/api/articles/like-comment', auth, async (req, res) => {
 
         if (article.articleComments[idx].commentLikes.length === 0 || !isLiked) {
             article.articleComments[idx].commentLikes = article.articleComments[idx].commentLikes.concat(req.user._id);
-            await article.save();
-            return res.send({
-                message: 'You liked this comment'
-            })
         } else if (isLiked) {
             article.articleComments[idx].commentLikes = [...article.articleComments[idx].commentLikes.slice(0, likedIdx), ...article.articleComments[idx].commentLikes.slice(likedIdx + 1)];
-            await article.save();
-            return res.send({
-                message: 'You removed your like'
-            })
         }
-
+        await article.save();
+        return res.send(article)
     } catch (e) {
         res.status(404).send({
             message: e.message
@@ -109,17 +100,11 @@ router.post('/api/articles/like-article', auth, async (req, res) => {
 
         if (idx <= -1) {
             article.particularArticle.articleLikesAmount = article.particularArticle.articleLikesAmount.concat(req.user._id);
-            await article.save();
-            return res.send({
-                message: 'You liked this article'
-            })
         } else if (idx > -1) {
             article.particularArticle.articleLikesAmount = [...article.particularArticle.articleLikesAmount.slice(0, idx), ...article.particularArticle.articleLikesAmount.slice(idx + 1)];
-            await article.save();
-            return res.send({
-                message: 'You removed your like'
-            })
         }
+        await article.save();
+        return res.send(article)
     } catch (e) {
         res.status(404).send({
             message: e.message
