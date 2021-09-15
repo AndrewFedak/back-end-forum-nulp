@@ -6,19 +6,24 @@ const multer = require('multer');
 const sharp = require('sharp');
 
 router.post('/api/authenticate', async (req, res) => {
-    const user = new User(req.body);
+
     try {
+        const user = new User(req.body);
         const token = await user.generateAuthToken();
+
         await user.save();
         res.status(201).send({user, token});
     } catch (e) {
-        res.status(400).send({error: e});
+        res.status(400).reject({error: 'Ви вже зареэстровані'});
     }
 });
 
 router.post('/api/authenticate/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.dataUserEmail, req.body.dataUserPassword);
+        if(!user) {
+            throw new Error('Ви не зареєстровані')
+        }
         const token = await user.generateAuthToken();
         res.send({user, token});
     } catch (e) {
@@ -77,7 +82,7 @@ router.post('/api/me/avatar', auth, upload.single('avatar'), async (req, res) =>
     const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250}).png().toBuffer();
     req.user.dataUserIcon = buffer;
     await req.user.save();
-    res.send('Good');
+    res.status(200).send(req.user);
 }, (err, req, res, next) => {
     res.status(400).send({error: err.message})
 });
@@ -86,15 +91,14 @@ router.get(`/api/avatar/:id`, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
 
-        if (!user || !user.dataUserIcon) {
-            throw new Error('Gg')
+        if (!user?.dataUserIcon) {
+            throw new Error('Немає фото')
         }
         res.set('Content-Type', 'img/png');
         res.send(user.dataUserIcon)
-    } catch (e) {
-        res.status(404).send()
+    } catch (error) {
+        res.status(404).send({error})
     }
-
 });
 
 module.exports = router;
