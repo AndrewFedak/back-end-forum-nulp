@@ -4,9 +4,23 @@ const Articles = require('../model/articles');
 const auth = require('../middleware/auth');
 
 router.get('/api/articles', async (req, res) => {
+    const {page, limit = 9, searchValue = ''} = req.query;
     try {
-        const article = await Articles.find({});
-        res.status(200).send(article)
+        const [amount, articles] = await Promise.all(
+            [Articles.countDocuments({}),
+            Articles
+                .find({})
+                .skip((page-1)*limit)
+                .limit(+limit)
+            ])
+        const filteredArray = (function() {
+            if (searchValue === '') return articles;
+            return articles.filter((article) => {
+                const {articleText} = article.particularArticle
+                return articleText.indexOf(searchValue) > -1;
+            });
+        }());
+        res.status(200).send({amount, articles: filteredArray})
     } catch (e) {
         res.status(500).send();
     }
