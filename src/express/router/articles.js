@@ -6,21 +6,27 @@ const auth = require('../middleware/auth');
 router.get('/api/articles', async (req, res) => {
     const {page, limit = 9, searchValue = ''} = req.query;
     try {
-        const [amount, articles] = await Promise.all(
-            [Articles.countDocuments({}),
+        const [allArticles, paginatedArticles] = await Promise.all(
+            [Articles.find({}),
             Articles
                 .find({})
                 .skip((page-1)*limit)
                 .limit(+limit)
             ])
-        const filteredArray = (function() {
-            if (searchValue === '') return articles;
-            return articles.filter((article) => {
-                const {articleText} = article.particularArticle
-                return articleText.indexOf(searchValue) > -1;
+        const filterBySearch = (data) => {
+            if (searchValue === '') return data;
+            return data.filter((article) => {
+                const {articleText = ''} = article.particularArticle
+                const {shortDescription = ''} = article.articlePreview;
+                return articleText.indexOf(searchValue) > -1
+                    || shortDescription.indexOf(searchValue) > -1
+                    || article.titleTheme.indexOf(searchValue) > -1
             });
-        }());
-        res.status(200).send({amount, articles: filteredArray})
+        }
+        res.status(200).send({
+            amount: filterBySearch(allArticles).length,
+            articles: filterBySearch(paginatedArticles)
+        })
     } catch (e) {
         res.status(500).send();
     }
