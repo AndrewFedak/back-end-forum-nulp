@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 const multer = require('multer');
 const sharp = require('sharp');
 
-router.post('/api/authenticate', async (req, res) => {
+router.post('/api/registration', async (req, res) => {
 
     try {
         const user = new User(req.body);
@@ -18,7 +18,7 @@ router.post('/api/authenticate', async (req, res) => {
     }
 });
 
-router.post('/api/authenticate/login', async (req, res) => {
+router.post('/api/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.dataUserEmail, req.body.dataUserPassword);
         if(!user) {
