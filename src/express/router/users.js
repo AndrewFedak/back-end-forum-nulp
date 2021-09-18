@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 const multer = require('multer');
 const sharp = require('sharp');
 
-router.post('/api/authenticate', async (req, res) => {
+router.post('/api/registration', async (req, res) => {
 
     try {
         const user = new User(req.body);
@@ -18,7 +18,7 @@ router.post('/api/authenticate', async (req, res) => {
     }
 });
 
-router.post('/api/authenticate/login', async (req, res) => {
+router.post('/api/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.dataUserEmail, req.body.dataUserPassword);
         if(!user) {
@@ -78,7 +78,7 @@ const upload = multer({
     }
 });
 
-router.post('/api/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+router.post('/api/avatar', auth, upload.single('avatar'), async (req, res) => {
     const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250}).png().toBuffer();
     req.user.dataUserIcon = buffer;
     await req.user.save();
@@ -91,7 +91,7 @@ router.get(`/api/avatar/:id`, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
 
-        if (!user?.dataUserIcon) {
+        if (!user.dataUserIcon) {
             throw new Error('Немає фото')
         }
         res.set('Content-Type', 'img/png');

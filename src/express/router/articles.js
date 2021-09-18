@@ -4,9 +4,20 @@ const Articles = require('../model/articles');
 const auth = require('../middleware/auth');
 
 router.get('/api/articles', async (req, res) => {
+    const {page, limit = 9, searchValue = ''} = req.query;
     try {
-        const article = await Articles.find({});
-        res.status(200).send(article)
+        const regExp = new RegExp(searchValue, 'gi');
+        const [amount, paginatedArticles] = await Promise.all(
+            [Articles.find({titleTheme: regExp}).countDocuments(),
+            Articles
+                .find({titleTheme: regExp})
+                .skip((page-1)*limit)
+                .limit(+limit)
+            ])
+        res.status(200).send({
+            amount,
+            articles: paginatedArticles
+        })
     } catch (e) {
         res.status(500).send();
     }
