@@ -6,26 +6,17 @@ const auth = require('../middleware/auth');
 router.get('/api/articles', async (req, res) => {
     const {page, limit = 9, searchValue = ''} = req.query;
     try {
-        const [allArticles, paginatedArticles] = await Promise.all(
-            [Articles.find({}),
+        const regExp = new RegExp(searchValue, 'gi');
+        const [amount, paginatedArticles] = await Promise.all(
+            [Articles.find({titleTheme: regExp}).countDocuments(),
             Articles
-                .find({})
+                .find({titleTheme: regExp})
                 .skip((page-1)*limit)
                 .limit(+limit)
             ])
-        const filterBySearch = (data) => {
-            if (searchValue === '') return data;
-            return data.filter((article) => {
-                const {articleText = ''} = article.particularArticle
-                const {shortDescription = ''} = article.articlePreview;
-                return articleText.indexOf(searchValue) > -1
-                    || shortDescription.indexOf(searchValue) > -1
-                    || article.titleTheme.indexOf(searchValue) > -1
-            });
-        }
         res.status(200).send({
-            amount: filterBySearch(allArticles).length,
-            articles: filterBySearch(paginatedArticles)
+            amount,
+            articles: paginatedArticles
         })
     } catch (e) {
         res.status(500).send();
