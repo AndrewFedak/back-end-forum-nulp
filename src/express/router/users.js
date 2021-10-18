@@ -14,7 +14,7 @@ router.post('/api/registration', async (req, res) => {
         await user.save();
         res.status(201).send({user, token});
     } catch (e) {
-        res.status(400).reject({error: 'Ви вже зареэстровані'});
+        res.status(400).send({error: 'Ви вже зареэстровані'});
     }
 });
 
@@ -27,7 +27,7 @@ router.post('/api/login', async (req, res) => {
         const token = await user.generateAuthToken();
         res.send({user, token});
     } catch (e) {
-        res.status(400).send(e);
+        res.status(404).send({error: e.message});
     }
 });
 
@@ -47,6 +47,16 @@ router.get('/api/profile', auth, async (req, res) => {
     try {
         const {dataUserName, dataUserEmail, _id, dataUserIcon} = req.user;
         res.send({dataUserName, dataUserEmail, _id, dataUserIcon})
+    } catch (e) {
+        res.status(500).send()
+    }
+});
+
+router.put('/api/profile', auth, async (req, res) => {
+    try {
+        const user = await User.findOneAndUpdate({_id: req.user._id}, req.body);
+        await user.save();
+        res.status(200).send();
     } catch (e) {
         res.status(500).send()
     }

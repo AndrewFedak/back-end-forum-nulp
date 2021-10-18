@@ -46,7 +46,6 @@ const userSchema = new mongoose.Schema({
 userSchema.methods.generateAuthToken = async function () {
     const user = this;
     const token = jwt.sign({_id: user._id.toString()}, process.env.JWT_SECRET, { expiresIn: '2 hours'});
-    // console.log(token);
     user.tokens = user.tokens.concat({token});
 
     await user.save();
@@ -59,10 +58,7 @@ userSchema.statics.findByCredentials = async (dataUserEmail, dataUserPassword) =
         throw new Error('Unable to log in')
     }
 
-
-    const isMatch = await bcrypt.compare(dataUserPassword, user.dataUserPassword);
-
-    if (!isMatch) {
+    if (dataUserPassword !== user.dataUserPassword) {
         throw new Error('Unable to log in')
     }
 
