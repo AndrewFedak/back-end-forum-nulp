@@ -45,8 +45,8 @@ router.post('/api/logout', auth, async (req, res) => {
 
 router.get('/api/profile', auth, async (req, res) => {
     try {
-        const {dataUserName, dataUserEmail, _id, dataUserIcon} = req.user;
-        res.send({dataUserName, dataUserEmail, _id, dataUserIcon})
+        const {dataUserName, dataUserEmail, _id, dataUserIcon, dataUserPassword} = req.user;
+        res.send({dataUserName, dataUserEmail, _id, dataUserIcon, dataUserPassword})
     } catch (e) {
         res.status(500).send()
     }
