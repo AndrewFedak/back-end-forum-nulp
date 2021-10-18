@@ -45,8 +45,8 @@ router.post('/api/logout', auth, async (req, res) => {
 
 router.get('/api/profile', auth, async (req, res) => {
     try {
-        const {dataUserName, dataUserEmail, _id, dataUserIcon, dataUserPassword} = req.user;
-        res.send({dataUserName, dataUserEmail, _id, dataUserIcon, dataUserPassword})
+        const {dataUserName, dataUserEmail, _id, dataUserIcon} = req.user;
+        res.send({dataUserName, dataUserEmail, _id, dataUserIcon})
     } catch (e) {
         res.status(500).send()
     }
@@ -54,11 +54,17 @@ router.get('/api/profile', auth, async (req, res) => {
 
 router.put('/api/profile', auth, async (req, res) => {
     try {
+        if(!req.body.dataUserPassword.trim()) {
+            req.body.dataUserPassword = req.user.dataUserPassword;
+        }
         const user = await User.findOneAndUpdate({_id: req.user._id}, req.body);
         await user.save();
-        res.status(200).send();
+        res.status(200).send({
+            ...req.user,
+            ...req.body
+        });
     } catch (e) {
-        res.status(500).send()
+        res.status(500).send(e)
     }
 });
 
