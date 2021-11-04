@@ -82,6 +82,17 @@ router.get('/api/online', async (req, res) => {
     }
 });
 
+router.get('/api/users', async (req, res) => {
+    try {
+        let users = await User.find({});
+        res.send(users);
+    } catch (e) {
+        res.status(500).send({
+            error: 'Error'
+        })
+    }
+});
+
 const upload = multer({
     limits: {
         fileSize: 5000000

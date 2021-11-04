@@ -7,10 +7,10 @@ router.get('/api/articles', async (req, res) => {
     const {page, limit = 9, searchValue = ''} = req.query;
     try {
         const regExp = new RegExp(searchValue, 'gi');
+        const allArticles = await Articles.find({titleTheme: regExp})
         const [amount, paginatedArticles] = await Promise.all(
-            [Articles.find({titleTheme: regExp}).countDocuments(),
-            Articles
-                .find({titleTheme: regExp})
+            [allArticles.countDocuments(),
+                allArticles
                 .skip((page-1)*limit)
                 .limit(+limit)
             ])
