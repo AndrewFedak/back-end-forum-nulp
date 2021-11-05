@@ -21,7 +21,7 @@ router.get('/api/rooms/:userId', async (req, res) => {
 
 router.post('/api/rooms/:userId', async (req, res) => {
     try {
-        const {participants} = req.body;
+        const {participants, name} = req.body;
         const userId = req.params.userId;
         participants.push(userId);
         const room = new Room({
@@ -30,7 +30,8 @@ router.post('/api/rooms/:userId', async (req, res) => {
                 userId: participant,
                 isNewMessage: false
             })),
-            messages: []
+            messages: [],
+            name
         })
         await room.save();
         res.status(200).json(room)

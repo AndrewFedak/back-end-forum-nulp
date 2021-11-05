@@ -4,6 +4,9 @@ const roomSchema = new mongoose.Schema({
     administrator: {
         type: mongoose.Schema.Types.ObjectId
     },
+    name: {
+        type: String
+    },
     participants: [{
         userId: {
             type: mongoose.Schema.Types.ObjectId

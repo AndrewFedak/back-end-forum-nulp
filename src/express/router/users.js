@@ -82,11 +82,18 @@ router.get('/api/online', async (req, res) => {
     }
 });
 
-router.get('/api/users', async (req, res) => {
+router.post('/api/users', async (req, res) => {
     try {
-        let users = await User.find({});
+        const userIds = req.body.userIds;
+        let users;
+        if(!userIds) {
+            users = await User.find({});
+        } else {
+            users = await User.find({_id: { $in: userIds}});
+        }
         res.send(users);
     } catch (e) {
+        console.log(e);
         res.status(500).send({
             error: 'Error'
         })
