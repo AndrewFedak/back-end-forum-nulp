@@ -4,6 +4,7 @@ const router = new express.Router();
 const auth = require('../middleware/auth');
 const multer = require('multer');
 const sharp = require('sharp');
+const { query } = require('express');
 
 router.post('/api/registration', async (req, res) => {
 
@@ -82,15 +83,17 @@ router.get('/api/online', async (req, res) => {
     }
 });
 
-router.post('/api/users', async (req, res) => {
+router.get('/api/users', async (req, res) => {
     try {
-        const userIds = req.body.userIds;
-        let users;
-        if(!userIds) {
-            users = await User.find({});
-        } else {
-            users = await User.find({_id: { $in: userIds}});
+        const {dataUserName = '', userIds} = req.query;
+        const query = {};
+        if(userIds) {
+            query._id = {$in: JSON.parse(userIds)}
         }
+        if(dataUserName) {
+            query.dataUserName = new RegExp(dataUserName, 'gi')
+        }
+        const users = await User.find(query);
         res.send(users);
     } catch (e) {
         console.log(e);

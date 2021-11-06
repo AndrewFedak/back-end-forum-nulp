@@ -19,13 +19,11 @@ router.get('/api/rooms/:userId', async (req, res) => {
     }
 })
 
-router.post('/api/rooms/:userId', async (req, res) => {
+router.post('/api/rooms', async (req, res) => {
     try {
-        const {participants, name} = req.body;
-        const userId = req.params.userId;
-        participants.push(userId);
+        const {participants, name, administrator} = req.body;
         const room = new Room({
-            administrator: userId,
+            administrator,
             participants: participants.map((participant) => ({
                 userId: participant,
                 isNewMessage: false
@@ -34,8 +32,10 @@ router.post('/api/rooms/:userId', async (req, res) => {
             name
         })
         await room.save();
+        console.log('Saved')
         res.status(200).json(room)
     } catch (e) {
+        console.log(e)
         res.status(500).send()
     }
 })
