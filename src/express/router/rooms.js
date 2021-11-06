@@ -32,7 +32,6 @@ router.post('/api/rooms', async (req, res) => {
             name
         })
         await room.save();
-        console.log('Saved')
         res.status(200).json(room)
     } catch (e) {
         console.log(e)
