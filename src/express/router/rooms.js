@@ -58,12 +58,9 @@ router.post('/api/messages/:roomId', async (req, res) => {
     }
 })
 
-router.post('/api/messages/read/:roomId', async (req, res) => {
+router.post('/api/messages/read/:roomId', auth, async (req, res) => {
     try {
         // auth middleware req.user
-        req.user = {
-            _id: "617312e93b567e0016a59b2f"
-        }
         const roomId = req.params.roomId;
         const room = await Room.findById(roomId);
         room.participants.forEach(participant => {
